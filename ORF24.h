@@ -176,6 +176,16 @@ public:
 	void setCRCLength(CRCLength length);
 
 	/**
+	 * Set nRF24L01 to standby mode
+	 */
+	void powerUp(void);
+
+	/**
+	 * Set nRF24L01 to power down mode
+	 */
+	void powerDown(void);
+
+	/**
 	 * Enable debugging information
 	 */
 	void enableDebug(void);

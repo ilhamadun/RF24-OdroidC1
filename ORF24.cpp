@@ -367,6 +367,40 @@ unsigned char ORF24::flushTX(void)
 }
 
 /**
+ * Set nRF24L01 to standby mode
+ */
+void ORF24::powerUp(void)
+{
+	unsigned char config = readRegister(CONFIG);
+
+	config |= (1 << PWR_UP);
+
+	if (debug)
+	{
+		std::cout << "Setting nRF24L01 to Standby-I mode...\n";
+	}
+
+	writeRegister(CONFIG, config);
+}
+
+/**
+ * Set nRF24L01 to power down mode
+ */
+void ORF24::powerDown(void)
+{
+	unsigned char config = readRegister(CONFIG);
+
+	config &= ~(1 << PWR_UP);
+
+	if (debug)
+	{
+		std::cout << "Setting nRF24L01 to Power Down mode...\n";
+	}
+
+	writeRegister(CONFIG, config);
+}
+
+/**
  * Enable debugging information
  */
 void ORF24::enableDebug(void)
