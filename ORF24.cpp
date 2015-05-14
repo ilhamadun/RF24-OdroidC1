@@ -415,6 +415,9 @@ void ORF24::enableDebug(void)
 
 /**
  * Print register value
+ *
+ * @param  name 	register name
+ * @param  reg 		register address	
  */
 void ORF24::printRegister(std::string name, unsigned char reg)
 {
@@ -429,6 +432,9 @@ void ORF24::printRegister(std::string name, unsigned char reg)
 
 /**
  * Print address register
+ *
+ * @param  name 	register name
+ * @param  reg 		register address	
  */
 void ORF24::printAddressRegister(std::string name, unsigned char reg)
 {

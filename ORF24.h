@@ -193,11 +193,17 @@ public:
 
 	/**
 	 * Print register value
+	 *
+	 * @param  name 	register name
+	 * @param  reg 		register address	
 	 */
 	void printRegister(std::string name, unsigned char reg);
 
 	/**
 	 * Print address register
+	 *
+	 * @param  name 	register name
+	 * @param  reg 		register address	
 	 */
 	void printAddressRegister(std::string name, unsigned char reg);
 
