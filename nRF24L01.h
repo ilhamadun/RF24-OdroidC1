@@ -153,8 +153,18 @@
 #define		EN_ACK_PAY				1
 #define		EN_DYN_ACK				0
 
-/**
- * Register Mnemonics
- */
+/* CRC Encoding Scheme */
+#define 	CRC_1_BYTE				0
+#define 	CRC_2_BYTE				1
+
+/* 	Air Data Rate */
+#define 	RF_DR_1MBPS				0
+#define 	RF_DR_2MBPS				1
+
+/* RF Output Power */
+#define 	RF_PWR_MIN				0
+#define 	RF_PWR_LOW				1
+#define 	RF_PWR_HIGH				2
+#define 	RF_PWR_MAX				3
 
 #endif

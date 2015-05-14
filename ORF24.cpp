@@ -39,3 +39,40 @@ ORF24::ORF24(int _ce, int _spiChannel, int _spiSpeed)
 	  spiSpeed(_spiSpeed),
 	  payloadSize(32)
 { }
+
+/**
+ * Read from nRF24L01 register
+ * 
+ * @param  	reg 	register address
+ * @return     		read register value
+ */
+unsigned char ORF24::readRegister(unsigned char reg)
+{
+	unsigned char *p = buffer;
+
+	*p++ = (R_REGISTER | (RW_MASK & reg)); 		/* Set SPI command to read register */
+	*p = NOP;									/* Set dummy data */
+
+	wiringPiSPIDataRW(spiChannel, buffer, 2); 		/* Start read register */
+
+	return *p;									/* Read register value */
+}
+
+/**
+ * Write to nRF24L01 register
+ * 
+ * @param  reg   	register address
+ * @param  value 	value to write
+ * @return       	nRF24L01 status
+ */
+unsigned char ORF24::writeRegister(unsigned char reg, unsigned char value)
+{
+	unsigned char *p = buffer;
+
+	*p = (W_REGISTER | (RW_MASK & reg));		/* Set SPI command to write register */
+	*p = value;									/* Set data to write */
+
+	wiringPiSPIDataRW(spiChannel, buffer, 2);		/* Start write register */
+
+	return *buffer;								/* Status is the first byte of receive buffer */
+}
