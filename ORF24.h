@@ -45,21 +45,41 @@ private:
 protected:
 	
 	/**
-	 * Read from nRF24L01 register
+	 * Read one byte from nRF24L01 register
 	 * 
 	 * @param  	reg 	register address
 	 * @return     		read register value
 	 */
-	unsigned char readRegister(unsigned char reg);	
+	unsigned char readRegister(unsigned char reg);
 
 	/**
-	 * Write to nRF24L01 register
+	 * Read multibyte from nRF24L01 register
+	 * 
+	 * @param  	reg 	register address
+	 * @param 	buf 	read buffer
+	 * @param 	len 	data length to read
+	 * @return     		read register value
+	 */
+	unsigned char readRegister(unsigned char reg, unsigned char *buf, int len);
+
+	/**
+	 * Write one byte to nRF24L01 register
 	 * 
 	 * @param  reg   	register address
 	 * @param  value 	value to write
 	 * @return       	nRF24L01 status
 	 */
 	unsigned char writeRegister(unsigned char reg, unsigned char value);
+
+	/**
+	 * Write multibyte to nRF24L01 register
+	 * 
+	 * @param  reg   	register address
+	 * @param  buf 		write buffer
+	 * @param  len 		data length to write
+	 * @return       	nRF24L01 status
+	 */
+	unsigned char writeRegister(unsigned char reg, const unsigned char *buf, int len);
 
 	/**
 	 * Write payload to send

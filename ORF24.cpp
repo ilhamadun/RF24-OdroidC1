@@ -114,6 +114,36 @@ unsigned char ORF24::readRegister(unsigned char reg)
 }
 
 /**
+ * Read multibyte from nRF24L01 register
+ * 
+ * @param  	reg 	register address
+ * @param 	buf 	read buffer
+ * @param 	len 	data length to read
+ * @return     		read register value
+ */
+unsigned char ORF24::readRegister(unsigned char reg, unsigned char *buf, int len)
+{
+	unsigned char *p = buffer;
+
+	*p++ = (R_REGISTER | (RW_MASK & reg));
+
+	for (int i = 0; i < len; i++)
+	{
+		*p++ = NOP;
+	}
+
+	wiringPiSPIDataRW(spiChannel, buffer, len + 1);
+
+	p = buffer + 1;
+	for (int i = 0; i < len; i--)
+	{
+		*buf = *p++;
+	}
+
+	return *buffer;
+}
+
+/**
  * Write to nRF24L01 register
  * 
  * @param  reg   	register address
@@ -130,6 +160,30 @@ unsigned char ORF24::writeRegister(unsigned char reg, unsigned char value)
 	wiringPiSPIDataRW(spiChannel, buffer, 2);		/* Start write register */
 
 	return *buffer;								/* Status is the first byte of receive buffer */
+}
+
+/**
+ * Write multibyte to nRF24L01 register
+ * 
+ * @param  reg   	register address
+ * @param  buf 		write buffer
+ * @param  len 		data length to write
+ * @return       	nRF24L01 status
+ */
+unsigned char ORF24::writeRegister(unsigned char reg, const unsigned char *buf, int len)
+{
+	unsigned char *p = buffer;
+
+	*p++ = (W_REGISTER | (RW_MASK & reg));
+
+	for (int i = 0; i < len; i++)
+	{
+		*p++ = *buf++;
+	}
+
+	wiringPiSPIDataRW(spiChannel, buffer, len + 1);
+
+	return *buffer;
 }
 
 /**
@@ -339,19 +393,14 @@ void ORF24::printRegisters(void)
 	printf("STATUS:\t\t0x%X\n", readRegister(STATUS));
 	printf("OBSERVE_TX:\t0x%X\n", readRegister(OBSERVE_TX));
 	printf("CD:\t\t0x%X\n", readRegister(CD));
-	printf("RX_ADDR_P0:\t0x%X\n", readRegister(RX_ADDR_P0));
-	printf("RX_ADDR_P1:\t0x%X\n", readRegister(RX_ADDR_P1));
-	printf("RX_ADDR_P2:\t0x%X\n", readRegister(RX_ADDR_P2));
-	printf("RX_ADDR_P3:\t0x%X\n", readRegister(RX_ADDR_P3));
-	printf("RX_ADDR_P4:\t0x%X\n", readRegister(RX_ADDR_P4));
-	printf("RX_ADDR_P5:\t0x%X\n", readRegister(RX_ADDR_P5));
-	printf("TX_ADDR:\t0x%X\n", readRegister(TX_ADDR));
+
 	printf("RX_PW_P0:\t0x%X\n", readRegister(RX_PW_P0));
 	printf("RX_PW_P1:\t0x%X\n", readRegister(RX_PW_P1));
 	printf("RX_PW_P2:\t0x%X\n", readRegister(RX_PW_P2));
 	printf("RX_PW_P3:\t0x%X\n", readRegister(RX_PW_P3));
 	printf("RX_PW_P4:\t0x%X\n", readRegister(RX_PW_P4));
 	printf("RX_PW_P5:\t0x%X\n", readRegister(RX_PW_P5));
+
 	printf("FIFO_STATUS:\t0x%X\n", readRegister(FIFO_STATUS));
 	printf("DYNPD:\t\t0x%X\n", readRegister(DYNPD));
 	printf("FEATURE:\t0x%X\n", readRegister(FEATURE));
