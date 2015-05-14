@@ -124,14 +124,14 @@
 #define 	TX_DR 					5
 #define 	MAX_RT 					4
 #define 	RX_P_NO 				1
-#define 	TX_FULL 				0
+#define 	STX_FULL 				0
 
 /* OBSERVE_TX Register Mnemonics */
 #define 	PLOS_CNT 				4
 #define 	ARC_CNT 				0
 
 /* CD Register Mnemonics */
-#define 	CD 						0
+#define 	MD 						0
 
 /* FIFO_STATUS Register Mnemonics */
 #define 	TX_REUSE				6

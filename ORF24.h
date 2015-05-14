@@ -27,7 +27,7 @@
 
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
-#include "nRF24L01.h";
+#include "nRF24L01.h"
 
 class ORF24
 {
