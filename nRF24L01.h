@@ -154,17 +154,12 @@
 #define		EN_DYN_ACK				0
 
 /* CRC Encoding Scheme */
-#define 	CRC_1_BYTE				0
-#define 	CRC_2_BYTE				1
+enum CRCLength {CRC_1_BYTE = 0, CRC_2_BYTE};
 
 /* 	Air Data Rate */
-#define 	RF_DR_1MBPS				0
-#define 	RF_DR_2MBPS				1
+enum DataRate {RF_DR_1MBPS = 0, RF_DR_2MBPS};
 
 /* RF Output Power */
-#define 	RF_PWR_MIN				0
-#define 	RF_PWR_LOW				1
-#define 	RF_PWR_HIGH				2
-#define 	RF_PWR_MAX				3
+enum RFPower {RF_PWR_MIN = 0, RF_PWR_LOW, RF_PWR_HIGH, RF_PWR_MAX};
 
 #endif

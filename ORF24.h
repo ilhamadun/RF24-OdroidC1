@@ -92,6 +92,50 @@ public:
 	 * @return  status
 	 */
 	bool begin(void);
+
+	/**
+	 * Set delay and number of retry for retransmission
+	 *
+	 * @param delay 	retransmission delay
+	 * @param count 	retransmission count
+	 */
+	void setRetries(int delay, int count);
+
+	/**
+	 * Set RF channel
+	 * 
+	 * @param channel 	channel number
+	 */
+	void setChannel(int channel);
+
+	/**
+	 * Set payload size
+	 * 
+	 * @param size 	payload size
+	 */
+	void setPayloadSize(int size);
+
+	/**
+	 * Set power level
+	 * 
+	 * @param level 	power level
+	 */
+	void setPowerLevel(RFPower level);
+
+	/**
+	 * Set air data rate
+	 * 
+	 * @param rate 		data rate
+	 */
+	void setDataRate(DataRate rate);
+
+	/**
+	 * Set CRC length
+	 * 
+	 * @param length 	CRC length
+	 */
+	void setCRCLength(CRCLength length);
+
 };
 
 #endif
