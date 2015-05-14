@@ -401,6 +401,52 @@ void ORF24::powerDown(void)
 }
 
 /**
+ * Open writing pipe
+ * 
+ * @param address 	pipe address
+ */
+void ORF24::openWritingPipe(const char *address)
+{
+	unsigned char *tmp = (unsigned char *) address;
+
+	unsigned char setupAW = readRegister(SETUP_AW);
+
+	int addressSize;
+	switch (setupAW)
+	{
+		case 0b01:
+			addressSize = 3;
+			break;
+
+		case 0b10:
+			addressSize = 4;
+			break;
+
+		case 0b11:
+		default:
+			addressSize = 5;
+	}
+
+	if (debug)
+	{
+		std::cout << "Opening writing pipe with address \"" << address << "\"...\n";
+	}
+
+	unsigned char addr[addressSize];
+
+	for (int i = 0; i < addressSize; i++)
+	{
+		addr[i] = tmp[addressSize - 1 - i];
+	}
+
+	writeRegister(RX_ADDR_P0, addr, 5);
+	writeRegister(TX_ADDR, addr, 5);
+
+	const int maxPayloadSize = 32;
+	writeRegister(RX_PW_P0, maxPayloadSize > payloadSize ? payloadSize : maxPayloadSize);
+}
+
+/**
  * Enable debugging information
  */
 void ORF24::enableDebug(void)
@@ -438,6 +484,18 @@ void ORF24::printRegister(std::string name, unsigned char reg)
  */
 void ORF24::printAddressRegister(std::string name, unsigned char reg)
 {
+	printAddressRegister(name, reg, false);
+}
+
+/**
+ * Print address register as string
+ *
+ * @param  name 	register name
+ * @param  reg 		register address
+ * @param  str 		print as string
+ */
+void ORF24::printAddressRegister(std::string name, unsigned char reg, bool str)
+{
 	std::cout << name << "\t";
 
 	if (name.length() < 8)
@@ -446,12 +504,19 @@ void ORF24::printAddressRegister(std::string name, unsigned char reg)
 	unsigned char buffer[5];
 	readRegister(reg, buffer, sizeof(buffer));
 
-	printf("0x");
+	if (!str)
+	{
+		printf("0x");
+	}
+
 	unsigned char *p = buffer + sizeof(buffer);
 
 	while (--p >= buffer)
 	{
-		printf("%02X", *p);
+		if (str)
+			printf("%c", *p);
+		else
+			printf("%02X", *p);
 	}
 
 	printf("\r\n");

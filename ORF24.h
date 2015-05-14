@@ -187,6 +187,13 @@ public:
 	void powerDown(void);
 
 	/**
+	 * Open writing pipe
+	 * 
+	 * @param address 	pipe address
+	 */
+	void openWritingPipe(const char *address);
+
+	/**
 	 * Enable debugging information
 	 */
 	void enableDebug(void);
@@ -206,6 +213,15 @@ public:
 	 * @param  reg 		register address	
 	 */
 	void printAddressRegister(std::string name, unsigned char reg);
+
+	/**
+	 * Print address register as string
+	 *
+	 * @param  name 	register name
+	 * @param  reg 		register address
+	 * @param  str 		print as string
+	 */
+	void printAddressRegister(std::string name, unsigned char reg, bool str);
 
 	/**
 	 * Print all register value
