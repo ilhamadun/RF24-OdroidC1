@@ -192,11 +192,6 @@ public:
 	void enableDebug(void);
 
 	/**
-	 * Print all register value
-	 */
-	void printAllRegister(void);
-
-	/**
 	 * Print register value
 	 */
 	void printRegister(std::string name, unsigned char reg);
@@ -205,6 +200,11 @@ public:
 	 * Print address register
 	 */
 	void printAddressRegister(std::string name, unsigned char reg);
+
+	/**
+	 * Print all register value
+	 */
+	void printAllRegister(void);
 
 };
 

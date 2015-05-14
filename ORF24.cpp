@@ -414,43 +414,6 @@ void ORF24::enableDebug(void)
 }
 
 /**
- * Print all register value
- */
-void ORF24::printAllRegister(void)
-{
-	std::cout << "\nREGISTER VALUES\n";
-
-	printRegister("CONFIG", CONFIG);
-	printRegister("EN_AA", EN_AA);
-	printRegister("EN_RXADDR", EN_RXADDR);
-	printRegister("SETUP_AW", SETUP_AW);
-	printRegister("SETUP_RETR", SETUP_RETR);
-	printRegister("RF_CH", RF_CH);
-	printRegister("RF_SETUP", RF_SETUP);
-	printRegister("STATUS", STATUS);
-	printRegister("OBSERVE_TX", OBSERVE_TX);
-	printRegister("CD", CD);
-	printAddressRegister("RX_ADDR_P0", RX_ADDR_P0);
-	printAddressRegister("RX_ADDR_P1", RX_ADDR_P1);
-	printRegister("RX_ADDR_P2", RX_ADDR_P2);
-	printRegister("RX_ADDR_P3", RX_ADDR_P3);
-	printRegister("RX_ADDR_P4", RX_ADDR_P4);
-	printRegister("RX_ADDR_P5", RX_ADDR_P5);
-	printAddressRegister("TX_ADDR", TX_ADDR);
-	printRegister("RX_PW_P0", RX_PW_P0);
-	printRegister("RX_PW_P1", RX_PW_P1);
-	printRegister("RX_PW_P2", RX_PW_P2);
-	printRegister("RX_PW_P3", RX_PW_P3);
-	printRegister("RX_PW_P4", RX_PW_P4);
-	printRegister("RX_PW_P5", RX_PW_P5);
-	printRegister("FIFO_STATUS", FIFO_STATUS);
-	printRegister("DYNPD", DYNPD);
-	printRegister("FEATURE", FEATURE);
-
-	std::cout << std::endl;
-}
-
-/**
  * Print register value
  */
 void ORF24::printRegister(std::string name, unsigned char reg)
@@ -486,4 +449,41 @@ void ORF24::printAddressRegister(std::string name, unsigned char reg)
 	}
 
 	printf("\r\n");
+}
+
+/**
+ * Print all register value
+ */
+void ORF24::printAllRegister(void)
+{
+	std::cout << "\nREGISTER VALUES\n";
+
+	printRegister("CONFIG", CONFIG);
+	printRegister("EN_AA", EN_AA);
+	printRegister("EN_RXADDR", EN_RXADDR);
+	printRegister("SETUP_AW", SETUP_AW);
+	printRegister("SETUP_RETR", SETUP_RETR);
+	printRegister("RF_CH", RF_CH);
+	printRegister("RF_SETUP", RF_SETUP);
+	printRegister("STATUS", STATUS);
+	printRegister("OBSERVE_TX", OBSERVE_TX);
+	printRegister("CD", CD);
+	printAddressRegister("RX_ADDR_P0", RX_ADDR_P0);
+	printAddressRegister("RX_ADDR_P1", RX_ADDR_P1);
+	printRegister("RX_ADDR_P2", RX_ADDR_P2);
+	printRegister("RX_ADDR_P3", RX_ADDR_P3);
+	printRegister("RX_ADDR_P4", RX_ADDR_P4);
+	printRegister("RX_ADDR_P5", RX_ADDR_P5);
+	printAddressRegister("TX_ADDR", TX_ADDR);
+	printRegister("RX_PW_P0", RX_PW_P0);
+	printRegister("RX_PW_P1", RX_PW_P1);
+	printRegister("RX_PW_P2", RX_PW_P2);
+	printRegister("RX_PW_P3", RX_PW_P3);
+	printRegister("RX_PW_P4", RX_PW_P4);
+	printRegister("RX_PW_P5", RX_PW_P5);
+	printRegister("FIFO_STATUS", FIFO_STATUS);
+	printRegister("DYNPD", DYNPD);
+	printRegister("FEATURE", FEATURE);
+
+	std::cout << std::endl;
 }
