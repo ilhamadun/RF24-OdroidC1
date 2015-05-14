@@ -135,9 +135,9 @@ unsigned char ORF24::readRegister(unsigned char reg, unsigned char *buf, int len
 	wiringPiSPIDataRW(spiChannel, buffer, len + 1);
 
 	p = buffer + 1;
-	for (int i = 0; i < len; i--)
+	for (int i = 0; i < len; i++)
 	{
-		*buf = *p++;
+		*buf++ = *p++;
 	}
 
 	return *buffer;
@@ -413,29 +413,77 @@ void ORF24::enableDebug(void)
 	}
 }
 
-void ORF24::printRegisters(void)
+/**
+ * Print all register value
+ */
+void ORF24::printAllRegister(void)
 {
 	std::cout << "\nREGISTER VALUES\n";
 
-	printf("CONFIG:\t\t0x%X\n", readRegister(CONFIG));
-	printf("EN_AA:\t\t0x%X\n", readRegister(EN_AA));
-	printf("EN_RXADDR:\t0x%X\n", readRegister(EN_RXADDR));
-	printf("SETUP_AW:\t0x%X\n", readRegister(SETUP_AW));
-	printf("SETUP_RETR:\t0x%X\n", readRegister(SETUP_RETR));
-	printf("RF_CH:\t\t0x%X\n", readRegister(RF_CH));
-	printf("RF_SETUP:\t0x%X\n", readRegister(RF_SETUP));
-	printf("STATUS:\t\t0x%X\n", readRegister(STATUS));
-	printf("OBSERVE_TX:\t0x%X\n", readRegister(OBSERVE_TX));
-	printf("CD:\t\t0x%X\n", readRegister(CD));
+	printRegister("CONFIG", CONFIG);
+	printRegister("EN_AA", EN_AA);
+	printRegister("EN_RXADDR", EN_RXADDR);
+	printRegister("SETUP_AW", SETUP_AW);
+	printRegister("SETUP_RETR", SETUP_RETR);
+	printRegister("RF_CH", RF_CH);
+	printRegister("RF_SETUP", RF_SETUP);
+	printRegister("STATUS", STATUS);
+	printRegister("OBSERVE_TX", OBSERVE_TX);
+	printRegister("CD", CD);
+	printAddressRegister("RX_ADDR_P0", RX_ADDR_P0);
+	printAddressRegister("RX_ADDR_P1", RX_ADDR_P1);
+	printRegister("RX_ADDR_P2", RX_ADDR_P2);
+	printRegister("RX_ADDR_P3", RX_ADDR_P3);
+	printRegister("RX_ADDR_P4", RX_ADDR_P4);
+	printRegister("RX_ADDR_P5", RX_ADDR_P5);
+	printAddressRegister("TX_ADDR", TX_ADDR);
+	printRegister("RX_PW_P0", RX_PW_P0);
+	printRegister("RX_PW_P1", RX_PW_P1);
+	printRegister("RX_PW_P2", RX_PW_P2);
+	printRegister("RX_PW_P3", RX_PW_P3);
+	printRegister("RX_PW_P4", RX_PW_P4);
+	printRegister("RX_PW_P5", RX_PW_P5);
+	printRegister("FIFO_STATUS", FIFO_STATUS);
+	printRegister("DYNPD", DYNPD);
+	printRegister("FEATURE", FEATURE);
 
-	printf("RX_PW_P0:\t0x%X\n", readRegister(RX_PW_P0));
-	printf("RX_PW_P1:\t0x%X\n", readRegister(RX_PW_P1));
-	printf("RX_PW_P2:\t0x%X\n", readRegister(RX_PW_P2));
-	printf("RX_PW_P3:\t0x%X\n", readRegister(RX_PW_P3));
-	printf("RX_PW_P4:\t0x%X\n", readRegister(RX_PW_P4));
-	printf("RX_PW_P5:\t0x%X\n", readRegister(RX_PW_P5));
+	std::cout << std::endl;
+}
 
-	printf("FIFO_STATUS:\t0x%X\n", readRegister(FIFO_STATUS));
-	printf("DYNPD:\t\t0x%X\n", readRegister(DYNPD));
-	printf("FEATURE:\t0x%X\n", readRegister(FEATURE));
+/**
+ * Print register value
+ */
+void ORF24::printRegister(std::string name, unsigned char reg)
+{
+	std::cout << name << "\t";
+
+	if (name.length() < 8)
+		std::cout << "\t";
+
+	unsigned char value = readRegister(reg);
+	printf("0x%02X\n", value);
+}
+
+/**
+ * Print address register
+ */
+void ORF24::printAddressRegister(std::string name, unsigned char reg)
+{
+	std::cout << name << "\t";
+
+	if (name.length() < 8)
+		std::cout << "\t";
+
+	unsigned char buffer[5];
+	readRegister(reg, buffer, sizeof(buffer));
+
+	printf("0x");
+	unsigned char *p = buffer + sizeof(buffer);
+
+	while (--p >= buffer)
+	{
+		printf("%02X", *p);
+	}
+
+	printf("\r\n");
 }

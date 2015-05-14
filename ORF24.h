@@ -26,6 +26,7 @@
 #define _ORF_24_H_
 
 #include <iostream>
+#include <string>
 #include <cstdio>
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
@@ -191,9 +192,19 @@ public:
 	void enableDebug(void);
 
 	/**
+	 * Print all register value
+	 */
+	void printAllRegister(void);
+
+	/**
 	 * Print register value
 	 */
-	void printRegisters(void);
+	void printRegister(std::string name, unsigned char reg);
+
+	/**
+	 * Print address register
+	 */
+	void printAddressRegister(std::string name, unsigned char reg);
 
 };
 
