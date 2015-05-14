@@ -75,6 +75,20 @@ protected:
 	 */
 	unsigned char readPayload(unsigned char *data, int len);
 
+	/**
+	 * Flush RX FIFO
+	 * 
+	 * @return  status
+	 */
+	unsigned char flushRX(void);
+
+	/**
+	 * Flush TX FIFO
+	 * 
+	 * @return  status
+	 */
+	unsigned char flushTX(void);
+
 public:
 	/**
 	 * ORF24 Constructor

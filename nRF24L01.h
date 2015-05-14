@@ -122,7 +122,7 @@
 
 /* STATUS Register Mnemonics */
 #define 	RX_DR 					6
-#define 	TX_DR 					5
+#define 	TX_DS 					5
 #define 	MAX_RT 					4
 #define 	RX_P_NO 				1
 #define 	STX_FULL 				0

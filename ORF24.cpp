@@ -41,6 +41,41 @@ ORF24::ORF24(int _ce, int _spiChannel, int _spiSpeed)
 { }
 
 /**
+ * nRF24L01 Initialization
+ * 
+ * @return  status
+ */
+bool ORF24::begin(void)
+{
+	/* Settipng up CE pin */
+	pinMode(ce, OUTPUT);
+	digitalWrite(ce, LOW);
+
+	/* Initializing SPI communication */
+	wiringPiSPISetup(spiChannel, spiSpeed);
+
+	/* Pulldown MOSI and SCK pin */
+	pullUpDnControl(14, PUD_DOWN);
+	pullUpDnControl(12, PUD_DOWN);
+
+	delay(100);
+
+	/* Setting up nRF24L01 configuration */
+	setRetries(0b0100, 0b1111);
+	setPowerLevel(RF_PA_MIN);
+	setDataRate(RF_DR_1MBPS);
+	setCRCLength(CRC_1_BYTE);
+	writeRegister(DYNPD, 0);
+	writeRegister(STATUS, (1 < RX_DR) | (1 << TX_DS) | (1 << MAX_RT));
+	setChannel(21);
+
+	flushRX();
+	flushTX();
+
+	return true;
+}
+
+/**
  * Read from nRF24L01 register
  * 
  * @param  	reg 	register address
@@ -69,7 +104,7 @@ unsigned char ORF24::writeRegister(unsigned char reg, unsigned char value)
 {
 	unsigned char *p = buffer;
 
-	*p = (W_REGISTER | (RW_MASK & reg));		/* Set SPI command to write register */
+	*p++ = (W_REGISTER | (RW_MASK & reg));		/* Set SPI command to write register */
 	*p = value;									/* Set data to write */
 
 	wiringPiSPIDataRW(spiChannel, buffer, 2);		/* Start write register */
@@ -182,4 +217,36 @@ void ORF24::setCRCLength(CRCLength length)
 	}
 
 	writeRegister(CONFIG, config);
+}
+
+/**
+ * Flush RX FIFO
+ * 
+ * @return  status
+ */
+unsigned char ORF24::flushRX(void)
+{
+	unsigned char *p = buffer;
+
+	*p = FLUSH_RX;
+
+	wiringPiSPIDataRW(spiChannel, buffer, 1);
+
+	return *buffer;
+}
+
+/**
+ * Flush TX FIFO
+ * 
+ * @return  status
+ */
+unsigned char ORF24::flushTX(void)
+{
+	unsigned char *p = buffer;
+
+	*p = FLUSH_TX;
+
+	wiringPiSPIDataRW(spiChannel, buffer, 1);
+
+	return *buffer;
 }
