@@ -107,7 +107,7 @@
 #define		AW						0
 
 /* SETUP_RETR Register Mnemonics */
-#define 	ADR						4
+#define 	ARD						4
 #define 	ARC 					0
 
 /* RF_CH Register Mnemonics */
@@ -116,7 +116,8 @@
 /* RF_SETUP Register Mnemonics */
 #define 	PLL_LOCK 				4
 #define 	RF_DR 					3
-#define 	RF_PWR					1
+#define 	RF_PWR_HIGH				2
+#define 	RF_PWR_LOW				1
 #define 	LNA_HCURR				0
 
 /* STATUS Register Mnemonics */
@@ -154,12 +155,12 @@
 #define		EN_DYN_ACK				0
 
 /* CRC Encoding Scheme */
-enum CRCLength {CRC_1_BYTE = 0, CRC_2_BYTE};
+enum CRCLength {CRC_1_BYTE = 0, CRC_2_BYTE, CRC_DISABLED};
 
 /* 	Air Data Rate */
 enum DataRate {RF_DR_1MBPS = 0, RF_DR_2MBPS};
 
 /* RF Output Power */
-enum RFPower {RF_PWR_MIN = 0, RF_PWR_LOW, RF_PWR_HIGH, RF_PWR_MAX};
+enum RFPower {RF_PA_MIN = 0, RF_PA_LOW, RF_PA_HIGH, RF_PA_MAX};
 
 #endif

@@ -76,3 +76,110 @@ unsigned char ORF24::writeRegister(unsigned char reg, unsigned char value)
 
 	return *buffer;								/* Status is the first byte of receive buffer */
 }
+
+/**
+ * Set delay and number of retry for retransmission
+ *
+ * @param delay 	retransmission delay
+ * @param count 	retransmission count
+ */
+void ORF24::setRetries(int delay, int count)
+{
+	writeRegister(SETUP_RETR, (delay & 0xF) << ARD | (count & 0xF) << ARC);
+}
+
+/**
+ * Set RF channel
+ * 
+ * @param channel 	channel number
+ */
+void ORF24::setChannel(int channel)
+{
+	const int max = 127;
+
+	writeRegister(RF_CH, max > channel ? channel : max);
+}
+
+/**
+ * Set payload size
+ * 
+ * @param size 	payload size
+ */
+void ORF24::setPayloadSize(int size)
+{
+	const int max = 32;
+	payloadSize = max > size ? size : max;
+}
+
+/**
+ * Set power level
+ * 
+ * @param level 	power level
+ */
+void ORF24::setPowerLevel(RFPower level)
+{
+	unsigned char setup = readRegister(RF_SETUP);
+
+	setup &= ~(1 << RF_PWR_LOW | 1 << RF_PWR_HIGH);
+
+	switch (level)
+	{
+		case RF_PA_MAX:
+			setup |= (1 << RF_PWR_LOW | 1 << RF_PWR_HIGH);
+			break;
+
+		case RF_PA_HIGH:
+			setup |= (1 << RF_PWR_HIGH);
+			break;
+
+		case RF_PA_LOW:
+			setup |= (1 << RF_PWR_LOW);
+			break;
+	}
+
+	writeRegister(RF_SETUP, setup);
+}
+
+/**
+ * Set air data rate
+ * 
+ * @param rate 		data rate
+ */
+void ORF24::setDataRate(DataRate rate)
+{
+	unsigned char setup = readRegister(RF_SETUP);
+
+	setup &= ~(1 << RF_DR);
+
+	if (rate == RF_DR_2MBPS)
+	{
+		setup |= (1 << RF_DR);
+	}
+
+	writeRegister(RF_SETUP, setup);	
+}
+
+/**
+ * Set CRC length
+ * 
+ * @param length 	CRC length
+ */
+void ORF24::setCRCLength(CRCLength length)
+{
+	unsigned char config = readRegister(CONFIG);
+
+	config &= ~(1 << CRCO | 1 << EN_CRC);
+
+	switch (length)
+	{
+		case CRC_1_BYTE:
+			config |= (1 << EN_CRC);
+			break;
+
+		case CRC_2_BYTE:
+			config |= (1 << EN_CRC) | (1 << CRCO);
+			break;
+	}
+
+	writeRegister(CONFIG, config);
+}
