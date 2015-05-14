@@ -25,6 +25,8 @@
 #ifndef _ORF_24_H_
 #define _ORF_24_H_
 
+#include <iostream>
+#include <cstdio>
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
 #include "nRF24L01.h"
@@ -38,15 +40,17 @@ private:
 	int spiSpeed;					/* SPI clock frequency in Hz */		
 	int payloadSize;				/* nRF24L01 payload size */
 	unsigned char buffer[32];		/* RX and TX buffer */
+	bool debug = false;
 
 protected:
+	
 	/**
 	 * Read from nRF24L01 register
 	 * 
 	 * @param  	reg 	register address
 	 * @return     		read register value
 	 */
-	unsigned char readRegister(unsigned char reg);
+	unsigned char readRegister(unsigned char reg);	
 
 	/**
 	 * Write to nRF24L01 register
@@ -90,6 +94,7 @@ protected:
 	unsigned char flushTX(void);
 
 public:
+
 	/**
 	 * ORF24 Constructor
 	 */
@@ -149,6 +154,16 @@ public:
 	 * @param length 	CRC length
 	 */
 	void setCRCLength(CRCLength length);
+
+	/**
+	 * Enable debugging information
+	 */
+	void enableDebug(void);
+
+	/**
+	 * Print register value
+	 */
+	void printRegisters(void);
 
 };
 

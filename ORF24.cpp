@@ -47,6 +47,11 @@ ORF24::ORF24(int _ce, int _spiChannel, int _spiSpeed)
  */
 bool ORF24::begin(void)
 {
+	if (debug)
+	{
+		std::cout << "Setting up SPI Communication Controller...\n";
+	}
+
 	/* Settipng up CE pin */
 	pinMode(ce, OUTPUT);
 	digitalWrite(ce, LOW);
@@ -58,7 +63,17 @@ bool ORF24::begin(void)
 	pullUpDnControl(14, PUD_DOWN);
 	pullUpDnControl(12, PUD_DOWN);
 
+	if (debug)
+	{
+		std::cout << "SPI communication initialized.\n";
+	}
+
 	delay(100);
+
+	if (debug)
+	{
+		std::cout << "Setting up nRF24L01...\n";
+	}
 
 	/* Setting up nRF24L01 configuration */
 	setRetries(0b0100, 0b1111);
@@ -71,6 +86,11 @@ bool ORF24::begin(void)
 
 	flushRX();
 	flushTX();
+
+	if (debug)
+	{
+		std::cout << "nRF24L01 initialized.\n";
+	}
 
 	return true;
 }
@@ -120,6 +140,11 @@ unsigned char ORF24::writeRegister(unsigned char reg, unsigned char value)
  */
 void ORF24::setRetries(int delay, int count)
 {
+	if (debug)
+	{
+		std::cout << "Setting up retransmission configuration...\n";
+	}
+
 	writeRegister(SETUP_RETR, (delay & 0xF) << ARD | (count & 0xF) << ARC);
 }
 
@@ -130,6 +155,11 @@ void ORF24::setRetries(int delay, int count)
  */
 void ORF24::setChannel(int channel)
 {
+	if (debug)
+	{
+		std::cout << "Setting up RF channel...\n";
+	}
+
 	const int max = 127;
 
 	writeRegister(RF_CH, max > channel ? channel : max);
@@ -142,7 +172,13 @@ void ORF24::setChannel(int channel)
  */
 void ORF24::setPayloadSize(int size)
 {
+	if (debug)
+	{
+		std::cout << "Setting up payload size...\n";
+	}
+
 	const int max = 32;
+
 	payloadSize = max > size ? size : max;
 }
 
@@ -153,6 +189,11 @@ void ORF24::setPayloadSize(int size)
  */
 void ORF24::setPowerLevel(RFPower level)
 {
+	if (debug)
+	{
+		std::cout << "Setting up RF power level...\n";
+	}
+
 	unsigned char setup = readRegister(RF_SETUP);
 
 	setup &= ~(1 << RF_PWR_LOW | 1 << RF_PWR_HIGH);
@@ -182,6 +223,11 @@ void ORF24::setPowerLevel(RFPower level)
  */
 void ORF24::setDataRate(DataRate rate)
 {
+	if (debug)
+	{
+		std::cout << "Setting up air data rate...\n";
+	}
+
 	unsigned char setup = readRegister(RF_SETUP);
 
 	setup &= ~(1 << RF_DR);
@@ -201,6 +247,11 @@ void ORF24::setDataRate(DataRate rate)
  */
 void ORF24::setCRCLength(CRCLength length)
 {
+	if (debug)
+	{
+		std::cout << "Setting up CRC...\n";
+	}
+
 	unsigned char config = readRegister(CONFIG);
 
 	config &= ~(1 << CRCO | 1 << EN_CRC);
@@ -226,6 +277,11 @@ void ORF24::setCRCLength(CRCLength length)
  */
 unsigned char ORF24::flushRX(void)
 {
+	if (debug)
+	{
+		std::cout << "Flushing RX FIFO...\n";
+	}
+
 	unsigned char *p = buffer;
 
 	*p = FLUSH_RX;
@@ -242,6 +298,11 @@ unsigned char ORF24::flushRX(void)
  */
 unsigned char ORF24::flushTX(void)
 {
+	if (debug)
+	{
+		std::cout << "Flushing TX FIFO...\n";
+	}
+
 	unsigned char *p = buffer;
 
 	*p = FLUSH_TX;
@@ -249,4 +310,49 @@ unsigned char ORF24::flushTX(void)
 	wiringPiSPIDataRW(spiChannel, buffer, 1);
 
 	return *buffer;
+}
+
+/**
+ * Enable debugging information
+ */
+void ORF24::enableDebug(void)
+{
+	debug = true;
+
+	if (debug)
+	{
+		std::cout << "Debug is enabled.\n";
+	}
+}
+
+void ORF24::printRegisters(void)
+{
+	std::cout << "\nREGISTER VALUES\n";
+
+	printf("CONFIG:\t\t0x%X\n", readRegister(CONFIG));
+	printf("EN_AA:\t\t0x%X\n", readRegister(EN_AA));
+	printf("EN_RXADDR:\t0x%X\n", readRegister(EN_RXADDR));
+	printf("SETUP_AW:\t0x%X\n", readRegister(SETUP_AW));
+	printf("SETUP_RETR:\t0x%X\n", readRegister(SETUP_RETR));
+	printf("RF_CH:\t\t0x%X\n", readRegister(RF_CH));
+	printf("RF_SETUP:\t0x%X\n", readRegister(RF_SETUP));
+	printf("STATUS:\t\t0x%X\n", readRegister(STATUS));
+	printf("OBSERVE_TX:\t0x%X\n", readRegister(OBSERVE_TX));
+	printf("CD:\t\t0x%X\n", readRegister(CD));
+	printf("RX_ADDR_P0:\t0x%X\n", readRegister(RX_ADDR_P0));
+	printf("RX_ADDR_P1:\t0x%X\n", readRegister(RX_ADDR_P1));
+	printf("RX_ADDR_P2:\t0x%X\n", readRegister(RX_ADDR_P2));
+	printf("RX_ADDR_P3:\t0x%X\n", readRegister(RX_ADDR_P3));
+	printf("RX_ADDR_P4:\t0x%X\n", readRegister(RX_ADDR_P4));
+	printf("RX_ADDR_P5:\t0x%X\n", readRegister(RX_ADDR_P5));
+	printf("TX_ADDR:\t0x%X\n", readRegister(TX_ADDR));
+	printf("RX_PW_P0:\t0x%X\n", readRegister(RX_PW_P0));
+	printf("RX_PW_P1:\t0x%X\n", readRegister(RX_PW_P1));
+	printf("RX_PW_P2:\t0x%X\n", readRegister(RX_PW_P2));
+	printf("RX_PW_P3:\t0x%X\n", readRegister(RX_PW_P3));
+	printf("RX_PW_P4:\t0x%X\n", readRegister(RX_PW_P4));
+	printf("RX_PW_P5:\t0x%X\n", readRegister(RX_PW_P5));
+	printf("FIFO_STATUS:\t0x%X\n", readRegister(FIFO_STATUS));
+	printf("DYNPD:\t\t0x%X\n", readRegister(DYNPD));
+	printf("FEATURE:\t0x%X\n", readRegister(FEATURE));
 }
