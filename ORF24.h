@@ -197,6 +197,21 @@ public:
 	void setCRCLength(CRCLength length);
 
 	/**
+	 * Set auto acknowledgment
+	 * 
+	 * @param enable 	enable or disable auto acknowledgment
+	 */
+	void setAutoACK(bool enable);
+
+	/**
+	 * Set auto acknowledgment
+	 * 
+	 * @param pipe   	pipe number
+	 * @param enable 	enable or disable auto acknowledgment
+	 */
+	void setAutoACK(int pipe, bool enable);
+
+	/**
 	 * Set nRF24L01 to standby mode
 	 */
 	void powerUp(void);

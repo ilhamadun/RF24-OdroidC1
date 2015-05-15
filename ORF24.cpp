@@ -82,7 +82,6 @@ bool ORF24::begin(void)
 	setCRCLength(CRC_1_BYTE);
 	writeRegister(DYNPD, 0);
 	writeRegister(STATUS, (1 < RX_DR) | (1 << TX_DS) | (1 << MAX_RT));
-	writeRegister(EN_AA, 0);
 	setChannel(21);
 
 	flushRX();
@@ -348,6 +347,40 @@ void ORF24::setCRCLength(CRCLength length)
 }
 
 /**
+ * Set auto acknowledgment
+ * 
+ * @param enable 	enable or disable auto acknowledgment
+ */
+void ORF24::setAutoACK(bool enable)
+{
+	if (enable)
+		writeRegister(EN_AA, 0b111111);
+	else
+		writeRegister(EN_AA, 0);
+}
+
+/**
+ * Set auto acknowledgment
+ * 
+ * @param pipe   	pipe number
+ * @param enable 	enable or disable auto acknowledgment
+ */
+void ORF24::setAutoACK(int pipe, bool enable)
+{
+	if (pipe <= 6)
+	{
+		unsigned char aa = readRegister(EN_AA);
+
+		if (enable)
+			aa |= (1 << pipe);
+		else
+			aa &= ~(1 << pipe);
+
+		writeRegister(EN_AA, aa);
+	}
+}
+
+/**
  * Flush RX FIFO
  * 
  * @return  status
@@ -437,10 +470,11 @@ bool ORF24::write(unsigned char *data, int len)
 		else
 		{
 			std::cout <<  "\nSending payload failed.\n";
-			printRegister("OBSERVE_TX", OBSERVE_TX);
-			printRegister("STATUS", STATUS);
-			std::cout << std::endl;
 		}
+		
+		printRegister("OBSERVE_TX", OBSERVE_TX);
+		printRegister("STATUS", STATUS);
+		std::cout << std::endl;
 	}
 
 	powerDown();
