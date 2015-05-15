@@ -60,8 +60,8 @@ bool ORF24::begin(void)
 	wiringPiSPISetup(spiChannel, spiSpeed);
 
 	/* Pulldown MOSI and SCK pin */
-	pullUpDnControl(14, PUD_DOWN);
-	pullUpDnControl(12, PUD_DOWN);
+	pullUpDnControl(MOSI_PIN, PUD_DOWN);
+	pullUpDnControl(SLCK_PIN, PUD_DOWN);
 
 	if (debug)
 	{
@@ -82,6 +82,7 @@ bool ORF24::begin(void)
 	setCRCLength(CRC_1_BYTE);
 	writeRegister(DYNPD, 0);
 	writeRegister(STATUS, (1 < RX_DR) | (1 << TX_DS) | (1 << MAX_RT));
+	writeRegister(EN_AA, 0);
 	setChannel(21);
 
 	flushRX();
@@ -179,6 +180,28 @@ unsigned char ORF24::writeRegister(unsigned char reg, const unsigned char *buf, 
 	for (int i = 0; i < len; i++)
 	{
 		*p++ = *buf++;
+	}
+
+	wiringPiSPIDataRW(spiChannel, buffer, len + 1);
+
+	return *buffer;
+}
+/**
+ * Write payload to send
+ * 
+ * @param  data 	data to send
+ * @param  len  	data length in byte
+ * @return      	nRF24L01 status
+ */
+unsigned char ORF24::writePayload(unsigned char *data, int len)
+{
+	unsigned char *p = buffer;
+
+	*p++ = W_TX_PAYLOAD;
+	
+	for (int i = 0; i < len; i++)
+	{
+		*p++ = *data++;
 	}
 
 	wiringPiSPIDataRW(spiChannel, buffer, len + 1);
@@ -367,6 +390,93 @@ unsigned char ORF24::flushTX(void)
 }
 
 /**
+ * Write payload to open writing pipe
+ * 
+ * @param  data 	data to write
+ * @param  len  	data length
+ * @return      	status
+ */
+bool ORF24::write(unsigned char *data, int len)
+{
+	bool result = false;
+
+	if (debug)
+	{
+		std::cout << "\nSending payload...\n";
+		printAddressRegister("RX Address", RX_ADDR_P0, true);
+		printRegister("RF Channel", RF_CH);
+		printf("\n");
+	}
+
+	startWrite(data, len);
+
+	unsigned char observeTX, status;
+	int sentAt = millis();
+	const unsigned long timeout = 500;
+
+	do
+	{
+		status = readRegister(OBSERVE_TX, &observeTX, 1);
+	} while (! (status & (1 << TX_DS | 1 << MAX_RT)) && (millis() - sentAt < timeout));
+
+	bool txOK, txFail, rxReady;
+
+	status = writeRegister(STATUS, 1 << RX_DR | 1 << TX_DS | 1 << MAX_RT);
+	txOK = status & (1 << TX_DS);
+	txFail = status & (1 << MAX_RT);
+	rxReady = status & (1 << RX_DR);
+
+	result = txOK;
+
+	if (debug)
+	{
+		if (result)
+		{
+			std::cout << "\nSending payload success.\n";
+		}
+		else
+		{
+			std::cout <<  "\nSending payload failed.\n";
+			printRegister("OBSERVE_TX", OBSERVE_TX);
+			printRegister("STATUS", STATUS);
+			std::cout << std::endl;
+		}
+	}
+
+	powerDown();
+
+	flushTX();
+
+	return result;
+}
+
+/**
+ * Start writing payload
+ * 
+ * @param data 	data to write
+ * @param len  	data length
+ */
+void ORF24::startWrite(unsigned char *data, int len)
+{
+	unsigned char config = readRegister(CONFIG);
+	config |= (1 << PWR_UP);
+	config &= ~(1 << PRIM_RX);
+	writeRegister(CONFIG, config);
+
+	delayMicroseconds(150);
+
+	writePayload(data, len);
+
+	printRegister("FIFO before CE high", FIFO_STATUS);
+
+	digitalWrite(ce, HIGH);
+	printRegister("FIFO after CE high", FIFO_STATUS);
+	delayMicroseconds(20);
+	digitalWrite(ce, LOW);
+	printRegister("FIFO after CE low", FIFO_STATUS);
+}
+
+/**
  * Set nRF24L01 to standby mode
  */
 void ORF24::powerUp(void)
@@ -496,7 +606,7 @@ void ORF24::printAddressRegister(std::string name, unsigned char reg)
  */
 void ORF24::printAddressRegister(std::string name, unsigned char reg, bool str)
 {
-	std::cout << name << "\t";
+	std::cout << name << ":\t";
 
 	if (name.length() < 8)
 		std::cout << "\t";

@@ -32,6 +32,9 @@
 #include <wiringPiSPI.h>
 #include "nRF24L01.h"
 
+#define 	MOSI_PIN		12
+#define 	SLCK_PIN		14
+
 class ORF24
 {
 private:
@@ -132,6 +135,23 @@ public:
 	 * @return  status
 	 */
 	bool begin(void);
+
+	/**
+	 * Write payload to open writing pipe
+	 * 
+	 * @param  data 	data to write
+	 * @param  len  	data length
+	 * @return      	status
+	 */
+	bool write(unsigned char *data, int len);
+
+	/**
+	 * Start writing payload
+	 * 
+	 * @param data 	data to write
+	 * @param len  	data length
+	 */
+	void startWrite(unsigned char *data, int len);
 
 	/**
 	 * Set delay and number of retry for retransmission
