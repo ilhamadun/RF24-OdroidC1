@@ -43,8 +43,11 @@ private:
 	int spiChannel;					/* Odroid SPI channel */
 	int spiSpeed;					/* SPI clock frequency in Hz */		
 	int payloadSize;				/* nRF24L01 payload size */
+	int ackPayloadAvailable;		/* Whether there is an ack payload waiting */
+	bool ackPayloadLength;			/* Dynamic size of pending ack payload */
+	bool dynamicPayloadAvailable;	/* Whether dynamic payload are enabled */
+	bool debug = false;				/* Debug flag */
 	unsigned char buffer[32];		/* RX and TX buffer */
-	bool debug = false;
 
 protected:
 	
@@ -116,6 +119,36 @@ protected:
 	 * @return  status
 	 */
 	unsigned char flushTX(void);
+
+	/**
+	 * Print register value
+	 *
+	 * @param  name 	register name
+	 * @param  reg 		register address	
+	 */
+	void printRegister(std::string name, unsigned char reg);
+
+	/**
+	 * Print address register
+	 *
+	 * @param  name 	register name
+	 * @param  reg 		register address	
+	 */
+	void printAddressRegister(std::string name, unsigned char reg);
+
+	/**
+	 * Print address register as string
+	 *
+	 * @param  name 	register name
+	 * @param  reg 		register address
+	 * @param  str 		print as string
+	 */
+	void printAddressRegister(std::string name, unsigned char reg, bool str);
+
+	/**
+	 * Print all register value
+	 */
+	void printAllRegister(void);
 
 public:
 
@@ -232,36 +265,6 @@ public:
 	 * Enable debugging information
 	 */
 	void enableDebug(void);
-
-	/**
-	 * Print register value
-	 *
-	 * @param  name 	register name
-	 * @param  reg 		register address	
-	 */
-	void printRegister(std::string name, unsigned char reg);
-
-	/**
-	 * Print address register
-	 *
-	 * @param  name 	register name
-	 * @param  reg 		register address	
-	 */
-	void printAddressRegister(std::string name, unsigned char reg);
-
-	/**
-	 * Print address register as string
-	 *
-	 * @param  name 	register name
-	 * @param  reg 		register address
-	 * @param  str 		print as string
-	 */
-	void printAddressRegister(std::string name, unsigned char reg, bool str);
-
-	/**
-	 * Print all register value
-	 */
-	void printAllRegister(void);
 
 };
 
