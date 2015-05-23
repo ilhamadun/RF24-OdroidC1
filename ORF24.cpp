@@ -451,6 +451,22 @@ unsigned char ORF24::flushTX(void)
 }
 
 /**
+ * Get RF status register
+ * 
+ * @return  status register
+ */
+unsigned char ORF24::getStatus(void)
+{
+	unsigned char *p = buffer;
+
+	*p = NOP;
+
+	wiringPiSPIDataRW(spiChannel, buffer, 1);
+
+	return *buffer;
+}
+
+/**
  * Write payload to open writing pipe
  * 
  * @param  data 	data to write

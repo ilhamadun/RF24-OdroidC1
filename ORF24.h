@@ -266,6 +266,13 @@ public:
 	 */
 	void enableDebug(void);
 
+	/**
+	 * Get RF status register
+	 * 
+	 * @return  status register
+	 */
+	unsigned char getStatus(void);
+
 };
 
 #endif
