@@ -82,14 +82,14 @@ bool ORF24::begin(void)
 	setCRCLength(CRC_1_BYTE);
 	writeRegister(DYNPD, 0);
 	writeRegister(STATUS, (1 < RX_DR) | (1 << TX_DS) | (1 << MAX_RT));
-	setChannel(21);
+	setChannel(0);
 
 	flushRX();
 	flushTX();
 
 	if (debug)
 	{
-		std::cout << "nRF24L01 initialized.\n";
+		std::cout << "nRF24L01 initialized.\n\n";
 	}
 
 	return true;
@@ -250,7 +250,7 @@ void ORF24::setPayloadSize(int size)
 {
 	if (debug)
 	{
-		std::cout << "Setting up payload size...\n";
+		std::cout << "Setting up payload size to " << size << "...\n";
 	}
 
 	const int max = 32;
@@ -354,9 +354,23 @@ void ORF24::setCRCLength(CRCLength length)
 void ORF24::setAutoACK(bool enable)
 {
 	if (enable)
+	{
+		if (debug)
+		{
+			std::cout << "Enabling Auto Acknowledgment...\n";
+		}
+
 		writeRegister(EN_AA, 0b111111);
+	}
 	else
+	{
+		if (debug)
+		{
+			std::cout << "Disabling Auto Acknowledgment...\n";
+		}
+
 		writeRegister(EN_AA, 0);
+	}
 }
 
 /**
@@ -367,14 +381,28 @@ void ORF24::setAutoACK(bool enable)
  */
 void ORF24::setAutoACK(int pipe, bool enable)
 {
-	if (pipe <= 6)
+	if (pipe < 6)
 	{
 		unsigned char aa = readRegister(EN_AA);
 
 		if (enable)
+		{
+			if (debug)
+			{
+				std::cout << "Enabling Auto Acknowledgment on pipe " << pipe << "...\n";
+			}
+
 			aa |= (1 << pipe);
+		}
 		else
+		{
+			if (debug)
+			{
+				std::cout << "Disabling Auto Acknowledgment on pipe " << pipe << "...\n";
+			}
+
 			aa &= ~(1 << pipe);
+		}
 
 		writeRegister(EN_AA, aa);
 	}
@@ -438,7 +466,6 @@ bool ORF24::write(unsigned char *data, int len)
 		std::cout << "\nSending payload...\n";
 		printAddressRegister("RX Address", RX_ADDR_P0, true);
 		printRegister("RF Channel", RF_CH);
-		printf("\n");
 	}
 
 	startWrite(data, len);
@@ -471,7 +498,7 @@ bool ORF24::write(unsigned char *data, int len)
 		{
 			std::cout <<  "\nSending payload failed.\n";
 		}
-		
+
 		printRegister("OBSERVE_TX", OBSERVE_TX);
 		printRegister("STATUS", STATUS);
 		std::cout << std::endl;
@@ -497,17 +524,16 @@ void ORF24::startWrite(unsigned char *data, int len)
 	config &= ~(1 << PRIM_RX);
 	writeRegister(CONFIG, config);
 
+	if (debug)
+		printRegister("CONFIG", CONFIG);
+
 	delayMicroseconds(150);
 
 	writePayload(data, len);
 
-	printRegister("FIFO before CE high", FIFO_STATUS);
-
 	digitalWrite(ce, HIGH);
-	printRegister("FIFO after CE high", FIFO_STATUS);
-	delayMicroseconds(20);
+	delayMicroseconds(15);
 	digitalWrite(ce, LOW);
-	printRegister("FIFO after CE low", FIFO_STATUS);
 }
 
 /**
