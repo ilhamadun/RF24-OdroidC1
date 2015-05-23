@@ -633,6 +633,79 @@ void ORF24::openWritingPipe(const char *address)
 }
 
 /**
+ * Open reading pipe
+ * 
+ * @param number  	pipe number
+ * @param address 	pipe address
+ */
+void ORF24::openReadingPipe(int pipe, const char *address)
+{
+	unsigned char *tmp = (unsigned char *) address;
+
+	unsigned char setupAW = readRegister(SETUP_AW);
+
+	int addressSize;
+	switch (setupAW)
+	{
+		case 0b01:
+			addressSize = 3;
+			break;
+
+		case 0b10:
+			addressSize = 4;
+			break;
+
+		case 0b11:
+		default:
+			addressSize = 5;
+	}
+
+	if (debug)
+	{
+		std::cout << "Opening reading pipe with address \"" << address << "\"...\n";
+	}
+
+	unsigned char addr[addressSize];
+
+	for (int i = 0; i < addressSize; i++)
+	{
+		addr[i] = tmp[addressSize - 1 - i];
+	}
+
+	if (pipe == 0)
+	{
+		pipe0ReadingAddress = addr;
+	}
+
+	const unsigned char childPipe[] =
+	{
+		RX_ADDR_P0, RX_ADDR_P1, RX_ADDR_P2, RX_ADDR_P3, RX_ADDR_P4, RX_ADDR_P5
+	};
+
+	const unsigned char childPayloadSize[] =
+	{
+		RX_PW_P0, RX_PW_P1, RX_PW_P2, RX_PW_P3, RX_PW_P4, RX_PW_P5
+	};
+
+	const unsigned char childPipeEnable[] =
+	{
+		ERX_P0, ERX_P1, ERX_P2, ERX_P3, ERX_P4, ERX_P5
+	};
+
+	if (pipe <= 6)
+	{
+		if (pipe < 2)
+			writeRegister(childPipe[pipe], addr, 5);
+		else
+			writeRegister(childPipe[0], addr, 1);
+
+		writeRegister(childPayloadSize[pipe], payloadSize);
+
+		writeRegister(EN_RXADDR, readRegister(EN_RXADDR) | (1 << childPipeEnable[pipe]));
+	}
+}
+
+/**
  * Enable debugging information
  */
 void ORF24::enableDebug(void)

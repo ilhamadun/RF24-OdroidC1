@@ -48,6 +48,7 @@ private:
 	bool dynamicPayloadAvailable;	/* Whether dynamic payload are enabled */
 	bool debug = false;				/* Debug flag */
 	unsigned char buffer[32];		/* RX and TX buffer */
+	unsigned char *pipe0ReadingAddress;
 
 protected:
 	
@@ -119,6 +120,13 @@ protected:
 	 * @return  status
 	 */
 	unsigned char flushTX(void);
+
+	/**
+	 * Get RF status register
+	 * 
+	 * @return  status register
+	 */
+	unsigned char getStatus(void);
 
 	/**
 	 * Print register value
@@ -262,16 +270,18 @@ public:
 	void openWritingPipe(const char *address);
 
 	/**
+	 * Open reading pipe
+	 * 
+	 * @param number  	pipe number
+	 * @param address 	pipe address
+	 */
+	void openReadingPipe(int pipe, const char *address);
+
+	/**
 	 * Enable debugging information
 	 */
 	void enableDebug(void);
 
-	/**
-	 * Get RF status register
-	 * 
-	 * @return  status register
-	 */
-	unsigned char getStatus(void);
 
 };
 
