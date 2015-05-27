@@ -51,7 +51,7 @@ private:
 	unsigned char *pipe0ReadingAddress;
 
 protected:
-	
+
 	/**
 	 * Read one byte from nRF24L01 register
 	 * 
@@ -157,6 +157,7 @@ protected:
 	 * Print all register value
 	 */
 	void printAllRegister(void);
+
 
 public:
 

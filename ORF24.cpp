@@ -479,9 +479,12 @@ bool ORF24::write(unsigned char *data, int len)
 
 	if (debug)
 	{
-		std::cout << "\nSending payload...\n";
-		printAddressRegister("RX Address", RX_ADDR_P0, true);
-		printRegister("RF Channel", RF_CH);
+		std::cout << "\nSending payload: ";
+		for (int i = 0; i < len; i++)
+		{
+			printf("%X", *(data+i));
+		}
+		printf("\n");
 	}
 
 	startWrite(data, len);
@@ -508,16 +511,12 @@ bool ORF24::write(unsigned char *data, int len)
 	{
 		if (result)
 		{
-			std::cout << "\nSending payload success.\n";
+			std::cout << "Sending payload success.\n";
 		}
 		else
 		{
-			std::cout <<  "\nSending payload failed.\n";
+			std::cout <<  "Sending payload failed.\n";
 		}
-
-		printRegister("OBSERVE_TX", OBSERVE_TX);
-		printRegister("STATUS", STATUS);
-		std::cout << std::endl;
 	}
 
 	powerDown();
@@ -539,9 +538,6 @@ void ORF24::startWrite(unsigned char *data, int len)
 	config |= (1 << PWR_UP);
 	config &= ~(1 << PRIM_RX);
 	writeRegister(CONFIG, config);
-
-	if (debug)
-		printRegister("CONFIG", CONFIG);
 
 	delayMicroseconds(150);
 
@@ -589,44 +585,12 @@ void ORF24::powerDown(void)
 /**
  * Open writing pipe
  * 
- * @param address 	pipe address
+ * @param addr 	pipe address
  */
-void ORF24::openWritingPipe(const char *address)
+void ORF24::openWritingPipe(const char *addr)
 {
-	unsigned char *tmp = (unsigned char *) address;
-
-	unsigned char setupAW = readRegister(SETUP_AW);
-
-	int addressSize;
-	switch (setupAW)
-	{
-		case 0b01:
-			addressSize = 3;
-			break;
-
-		case 0b10:
-			addressSize = 4;
-			break;
-
-		case 0b11:
-		default:
-			addressSize = 5;
-	}
-
-	if (debug)
-	{
-		std::cout << "Opening writing pipe with address \"" << address << "\"...\n";
-	}
-
-	unsigned char addr[addressSize];
-
-	for (int i = 0; i < addressSize; i++)
-	{
-		addr[i] = tmp[addressSize - 1 - i];
-	}
-
-	writeRegister(RX_ADDR_P0, addr, 5);
-	writeRegister(TX_ADDR, addr, 5);
+	writeRegister(RX_ADDR_P0, (unsigned char *) addr, 5);
+	writeRegister(TX_ADDR, (unsigned char *) addr, 5);
 
 	const int maxPayloadSize = 32;
 	writeRegister(RX_PW_P0, maxPayloadSize > payloadSize ? payloadSize : maxPayloadSize);
@@ -757,7 +721,7 @@ void ORF24::printAddressRegister(std::string name, unsigned char reg, bool str)
 {
 	std::cout << name << ":\t";
 
-	if (name.length() < 8)
+	if (name.length() < 7)
 		std::cout << "\t";
 
 	unsigned char buffer[5];
@@ -768,9 +732,9 @@ void ORF24::printAddressRegister(std::string name, unsigned char reg, bool str)
 		printf("0x");
 	}
 
-	unsigned char *p = buffer + sizeof(buffer);
+	unsigned char *p = buffer - 1;
 
-	while (--p >= buffer)
+	while (p++ < buffer + sizeof(buffer) - 1)
 	{
 		if (str)
 			printf("%c", *p);
@@ -798,13 +762,13 @@ void ORF24::printAllRegister(void)
 	printRegister("STATUS", STATUS);
 	printRegister("OBSERVE_TX", OBSERVE_TX);
 	printRegister("CD", CD);
-	printAddressRegister("RX_ADDR_P0", RX_ADDR_P0);
+	printAddressRegister("RX_ADDR_P0", RX_ADDR_P0, true);
 	printAddressRegister("RX_ADDR_P1", RX_ADDR_P1);
 	printRegister("RX_ADDR_P2", RX_ADDR_P2);
 	printRegister("RX_ADDR_P3", RX_ADDR_P3);
 	printRegister("RX_ADDR_P4", RX_ADDR_P4);
 	printRegister("RX_ADDR_P5", RX_ADDR_P5);
-	printAddressRegister("TX_ADDR", TX_ADDR);
+	printAddressRegister("TX_ADDR", TX_ADDR, true);
 	printRegister("RX_PW_P0", RX_PW_P0);
 	printRegister("RX_PW_P1", RX_PW_P1);
 	printRegister("RX_PW_P2", RX_PW_P2);
